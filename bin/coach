@@ -1,0 +1,4 @@
+#!/bin/sh
+# Wrapper so the worker agent can call `coach …` from any cwd.
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+exec bun "$DIR/src/cli.ts" "$@"

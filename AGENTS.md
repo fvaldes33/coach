@@ -1,10 +1,23 @@
-# coach-bridge — agent instructions
+# coach — agent instructions
 
-This is a [Spectrum](https://photon.codes/docs/spectrum-ts) app, pinned to `spectrum-ts@^12.10.1`. The entry point is `src/index.ts`, which configures the imessage provider(s) and runs the echo loop.
+> **Coach worker (COACH_BRIDGE=1, cwd `coach/`): this file is developer docs. Ignore it and follow `coach/AGENTS.md`.**
+
+This is a [Spectrum](https://photon.codes/docs/spectrum-ts) app, pinned to `spectrum-ts@^12.10.1`: an LLM nutrition coach over iMessage.
+
+## Architecture
+
+- `src/index.ts`: the bridge daemon. Allowlisted senders (`config.json`) get a 👀 ack, and 5 s bursts are debounced into one turn. Photos land in `data/inbox/` (HEIC→JPEG via `sips`) and barcodes are decoded locally (zxing-wasm). Missed messages are swept on boot. A reply Photon refuses (e.g. its daily send limit) goes to `data/outbox.json` and is retried with backoff (1 → 15 min). Once sending works, one waiting reply is resent as-is; several become one catch-up text the coach writes. Scheduled nudges (`src/bridge/nudger.ts`, per-profile `nudges.json`) are never retried. The coach keeps durable notes per person in `data/profiles/<id>/memory.md` (`coach memory`), included in every prompt. The process exits non-zero on stream failure so launchd relaunches it.
+- `src/bridge/router.ts`: TypeSafe/Jev intent routing, one ~200 ms call. A confident "where am I today/yesterday?" goes straight to the deterministic dashboard (no LLM). Everything else goes to the worker with the intent as a hint.
+- **Profiles:** each allowlisted person in `config.json` has an `id`. `data/profiles/<id>/` holds their own `coach.db`, photo inbox, and dashboards. The bridge only touches a person's data through `bin/coach` with `COACH_PROFILE=<id>` (`src/bridge/coachcli.ts`), and a reply can only attach files from inside that person's profile dir.
+- `src/bridge/worker.ts`: a headless `claude -p` (default) or `codex exec` (`COACH_WORKER=codex`) running in `coach/` with `COACH_PROFILE` set. It resumes ONE long session per person (`data/sessions.json`, key `<worker>:<id>`). The CLI's own compaction keeps the thread going. Each person's jobs run one at a time; different people run in parallel (`src/bridge/jobs.ts`).
+- `coach/AGENTS.md`: the worker's nutritionist brief and output contract (`REPLY:` + `FILE:` lines).
+- `src/cli.ts` (`bin/coach`): the only interface the worker uses. It covers the per-profile SQLite log, Open Food Facts / UPCitemdb / USDA FDC lookups, the personal food library, gut symptoms, goals, and the dashboard.
+- `src/core/dashboard.ts`: an SVG dashboard rasterised to PNG with resvg (no browser).
 
 ## Working in this project
 
-- Run the app with `bun start`.
+- Run in the foreground with `bun start`. As a daemon: `daemon/daemon.sh install|restart|status|logs` (restart typechecks first).
+- Poke the log by hand with `bin/coach help`. It defaults to the `me` profile. Use `COACH_PROFILE=<id>` for someone else, or `COACH_DB=/tmp/x.db` to experiment without touching a real log.
 - Add providers by importing them in `src/index.ts` and listing them in the `Spectrum({ providers: [...] })` config.
 - Outgoing message content uses the builders documented in the skill (text, attachment, voice, contact, richlink, poll, group, custom).
 

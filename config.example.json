@@ -1,0 +1,18 @@
+{
+  "operators": [
+    {
+      "id": "me",
+      "name": "Me",
+      "handle": "+15555550123",
+      "notes": "anything the coach should know: goals, conditions, preferences"
+    },
+    {
+      "id": "alex",
+      "name": "Alex",
+      "handle": "+15555550124",
+      "style": "non-technical",
+      "notes": ""
+    }
+  ],
+  "note": "Only these handles are read or replied to (exact match, 1:1 chats only). id = profile: data/profiles/<id>/ holds that person's food log, photos, and dashboards."
+}

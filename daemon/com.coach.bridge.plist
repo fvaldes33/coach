@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Template: daemon.sh install fills in __ROOT__, __BUN__, __PATH__, __HOME__. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.coach.bridge</string>
+  <key>WorkingDirectory</key><string>__ROOT__</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__BUN__</string>
+    <string>src/index.ts</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>__PATH__</string>
+    <key>HOME</key><string>__HOME__</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key><false/>
+  </dict>
+  <key>ThrottleInterval</key><integer>15</integer>
+  <key>StandardOutPath</key><string>__ROOT__/data/logs/bridge.out.log</string>
+  <key>StandardErrorPath</key><string>__ROOT__/data/logs/bridge.err.log</string>
+</dict>
+</plist>

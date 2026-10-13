@@ -1,14 +1,21 @@
 {
-  "name": "coach-bridge",
+  "name": "coach",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "bun src/index.ts",
-    "dev": "bun --watch src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "coach": "bun src/cli.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "daemon": "daemon/daemon.sh"
   },
   "dependencies": {
-    "spectrum-ts": "^12.10.1"
+    "@photon-ai/advanced-imessage": "2.2.0",
+    "@resvg/resvg-js": "^2.6.2",
+    "@typesafe-ai/sdk": "^0.6.0",
+    "spectrum-ts": "^12.10.1",
+    "zxing-wasm": "^3.1.4"
   },
   "devDependencies": {
     "typescript": "^5",
