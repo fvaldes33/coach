@@ -47,10 +47,6 @@ All data stays local in `data/` (gitignored).
 
 See [`AGENTS.md`](AGENTS.md) for architecture notes.
 
-## Not medical advice
-
-This is a logging and habit tool. The coach is told it isn't a doctor, but it's still an LLM. Check anything that matters with a real one.
-
 ## License
 
 MIT
